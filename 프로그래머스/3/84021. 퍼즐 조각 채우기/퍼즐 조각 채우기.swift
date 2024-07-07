@@ -1,4 +1,4 @@
-struct Coord: Hashable, Comparable {
+struct Coord: Hashable {
   
     let x: Int
     let y: Int
@@ -16,10 +16,6 @@ struct Coord: Hashable, Comparable {
     
     func isValid(_ maxX: Int, _ maxY: Int) -> Bool {
         return x >= 0 && x <= maxX && y >= 0 && y <= maxY
-    }
-    
-    static func < (lhs: Coord, rhs: Coord) -> Bool {
-        lhs.x < rhs.x
     }
 }
 
@@ -59,8 +55,8 @@ struct Shape: Equatable {
         return coord.count
     }
     
-    init(coord: [Coord]) {
-        self.coord = Set(coord).normalize()
+    init(coord: Set<Coord>) {
+        self.coord = coord.normalize()
     }
     
     static func ==(lhs: Self, rhs: Self) -> Bool {
@@ -69,7 +65,7 @@ struct Shape: Equatable {
 }
 
 func solution(_ game_board:[[Int]], _ table:[[Int]]) -> Int {
-    var needShapes = [Shape]()
+    var gameShapes = [Shape]()
     var tableShapes = [Shape]()
     var game_board_visisted = Array(repeating:
                             Array(repeating: false,
@@ -81,8 +77,14 @@ func solution(_ game_board:[[Int]], _ table:[[Int]]) -> Int {
                                   count: table[0].count),
                          count: table.count)
     
-    func bfs(_ x: Int, _ y: Int, _ map: [[Int]], _ visited: inout [[Bool]],_ target: Int) {
-        var result: [Coord] = []
+    func bfs(
+        _ x: Int, 
+        _ y: Int, 
+        _ map: [[Int]], 
+        _ visited: inout [[Bool]],
+        _ target: Int
+    ) {
+        var result: Set<Coord> = []
         var queue: [Coord] = []
         
         queue.append(Coord(x: x, y: y))
@@ -90,24 +92,28 @@ func solution(_ game_board:[[Int]], _ table:[[Int]]) -> Int {
         
         while !queue.isEmpty {
             let now = queue.removeFirst()
-            result.append(now)
+            result.insert(now)
             
             for next in now.getAdjacencyCoord() {
-                guard next.isValid(map.count - 1, map[0].count - 1) else { continue }
-                guard !visited[next.x][next.y] && map[next.x][next.y] == target else { continue }
+                guard next.isValid(map.count - 1, map[0].count - 1) 
+                else { continue }
+                guard !visited[next.x][next.y] && map[next.x][next.y] == target 
+                else { continue }
+                
                 visited[next.x][next.y] = true
                 queue.append(next)
             }
         }
         
         if target == 0 {
-            needShapes.append(Shape(coord: result))
+            gameShapes.append(Shape(coord: result))
         } else {
             tableShapes.append(Shape(coord: result))
         }
         
     }
     
+    // 게임 보드 블럭 찾기
     for x in game_board.indices {
         for y in game_board[0].indices {
             if !game_board_visisted[x][y] && game_board[x][y] == 0 {
@@ -116,6 +122,7 @@ func solution(_ game_board:[[Int]], _ table:[[Int]]) -> Int {
         }
     }
     
+    // 테이블 블럭 찾기
     for x in table.indices {
         for y in table[0].indices {
             if !table_visisted[x][y] && table[x][y] == 1 {
@@ -126,15 +133,11 @@ func solution(_ game_board:[[Int]], _ table:[[Int]]) -> Int {
     
     
     var answer = 0
-    print(needShapes.count)
-    print(tableShapes.count)
     
     for tableShape in tableShapes {
-        if let index = needShapes.firstIndex(of: tableShape) {
+        if let index = gameShapes.firstIndex(of: tableShape) {
             answer += tableShape.count
-            print(needShapes[index])
-            print("---")
-            needShapes.remove(at: index)
+            gameShapes.remove(at: index)
         }
     }
     
