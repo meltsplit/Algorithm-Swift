@@ -1,58 +1,37 @@
 import Foundation
-
-class LinkedList {
-    var head: Node?
-    var tail: Node?
+func solution(_ sequence:[Int], _ k:Int) -> [Int] {
     
-    func append(_ newNode: Node) {
-        if head == nil {
-            head = newNode
-            tail = newNode
+    var answer = [Int]()
+    
+    var start = 0
+    var end = 0
+    var sum = sequence[start]
+    
+    while true {
+        if sum == k {
+            let newAnswer = [start, end ]
+            
+            if answer.isEmpty {
+                answer = newAnswer
+            } else {
+                if end - start < answer[1] - answer[0] {
+                    answer = newAnswer
+                } else if start < answer[0] {
+                    answer = newAnswer
+                }
+            }
+        }
+        
+        
+        if sum <= k {
+            end += 1
+            guard end < sequence.count else { break }
+            sum += sequence[end]
         } else {
-            tail?.next = newNode
-            self.tail = newNode
+            sum -= sequence[start]
+            start += 1
         }
     }
     
-    func removeFirst() {
-        self.head = self.head?.next
-        if head == nil { tail = nil }
-        
-    }
-}
-
-class Node {
-    var value: Int
-    var next: Node?
-    
-    init(value: Int) {
-        self.value = value
-        self.next = nil
-    }
-}
-
-func solution(_ sequence:[Int], _ k:Int) -> [Int] {
-    
-    let linkedList = LinkedList()
-    var answer = [(Int, Int)]()
-    var stackSum = 0
-    
-    for index in sequence.indices {
-        linkedList.append(Node(value: index))
-        stackSum += sequence[index]
-        
-        while stackSum >= k {
-            if stackSum == k {
-                answer.append((linkedList.head!.value, linkedList.tail!.value)) 
-            } 
-            stackSum -= sequence[linkedList.head!.value]
-            linkedList.removeFirst()
-        } 
-    }
-    
-    answer = answer.sorted { $0.0 < $1.0 }
-    answer = answer.sorted { ($0.1 - $0.0) < ($1.1 - $1.0)}
-    
-    
-    return [answer.first!.0, answer.first!.1]
+    return answer
 }
