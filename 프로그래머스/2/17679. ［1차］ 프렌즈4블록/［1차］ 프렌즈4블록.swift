@@ -1,20 +1,3 @@
-// Idea 1: BFS
-// 자료구조: 배열을 세로로 설정
-// 1. 4개짜리를 찾는다.
-// 2. 찾은 인덱스 값을 지운다.
-// 3. 배열의 길이를 length에 맞게 빈 문자열 ""을 채운다
-// 4. 1~3을 반복한다.
-// 5. 4개짜리가 없으면 중단.
-
-// board
-//1...n
-//..
-//m..
-
-// newBoard
-//1...m
-//..
-//n..
 
 struct Point: Hashable {
     var x: Int
@@ -70,65 +53,27 @@ func solution(_ m:Int, _ n:Int, _ board:[String]) -> Int {
         return newBoard[point.x][point.y]
     }
     
+    func checkSquare(_ points: [Point]) -> Bool{
+        var values = points.compactMap(getData)
+        guard points.count == values.count else { return false }
+        return Set(values).count == 1
+    }
+    
     func check(_ x: Int, _ y: Int) -> Set<Point> {
         var answer = Set<Point>()
         
         let point = Point(x: x, y: y)
         
-        let me = newBoard[x][y]
-        
-        let ul = getData(point.ul)
-        let u = getData(point.u)
-        let ur = getData(point.ur)
-        let l = getData(point.l)
-        let r = getData(point.r)
-        let dl = getData(point.dl)
-        let d = getData(point.d)
-        let dr = getData(point.dr)
-        
-        if let ul = ul,
-           let u = u,
-           let l = l {
-               if Set([me,ul,u,l]).count == 1 {
-                   answer.insert(point)
-                   answer.insert(point.ul)
-                   answer.insert(point.u)
-                   answer.insert(point.l)
-               }
-           }
-        
-        if let ur = ur,
-           let u = u,
-           let r = r {
-               if Set([me,ur,u,r]).count == 1 {
-                   answer.insert(point)
-                   answer.insert(point.ur)
-                   answer.insert(point.u)
-                   answer.insert(point.r)
-               }
-           }
-        
-        if let dl = dl,
-           let d = d,
-           let l = l {
-               if Set([me,dl,d,l]).count == 1 {
-                   answer.insert(point)
-                   answer.insert(point.dl)
-                   answer.insert(point.d)
-                   answer.insert(point.l)
-               }
-           }
-        
-        if let dr = dr,
-           let d = d,
-           let r = r {
-               if Set([me,dr,d,r]).count == 1 {
-                   answer.insert(point)
-                   answer.insert(point.dr)
-                   answer.insert(point.d)
-                   answer.insert(point.r)
-               }
-           }
+        [[point, point.ul, point.u, point.l],
+         [point, point.ur, point.u, point.r],
+         [point, point.dl, point.d, point.l],
+         [point, point.dr, point.d, point.r]
+        ].forEach {
+            if checkSquare($0) {
+                answer = answer.union($0)
+            }
+        }
+  
         return answer
     }
     
