@@ -23,11 +23,11 @@ func integral(_ y: [Int]) -> Double {
 }
 
 func solution(_ k:Int, _ ranges:[[Int]]) -> [Double] {
-    let result = collatz(k, [])
+    let results = collatz(k, [])
     return ranges.map { range in
         let startIndex = range[0]
-        let endIndex = result.count + range[1]
+        let endIndex = results.count + range[1]
         guard startIndex < endIndex else { return -1.0 }
-        return integral(Array(result[startIndex..<endIndex]))
+        return integral(Array(results[startIndex..<endIndex]))
     }
 }
