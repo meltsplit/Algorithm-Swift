@@ -25,35 +25,17 @@ import Foundation
 func solution(_ a:[Int], _ b:[Int]) -> Int {
     var a = a.sorted()
     var b = b.sorted { $0 > $1 }
-    var low = -1
-    var high = a.count + 1
-    var mid = (low + high) / 2
-    
-    func isPossible(_ winCount: Int) -> Bool {
-        var count = 0
-        var _b = b
-        for aElement in a {
-            while !_b.isEmpty {
-                let bElement = _b.removeLast()
-                if bElement > aElement {
-                    count += 1
-                    break
-                }
+    var count = 0
+        
+    for aElement in a {
+        while !b.isEmpty {
+            let bElement = b.removeLast()
+            if bElement > aElement {
+                count += 1
+                break
             }
         }
-        
-        return count >= winCount
     }
     
-    while low + 1 < high {
-        mid = (low + high) / 2
-        if isPossible(mid) {
-            low = mid 
-        } else {
-            high = mid
-        }
-    }
-
-    
-    return low
+    return count
 }
