@@ -38,9 +38,7 @@ func solution(_ user_id:[String], _ banned_id:[String]) -> Int {
         
         for user in banList[depth] {
             guard !visited.contains(user) else { continue }
-            visited.insert(user)
-            dfs(depth + 1, visited)
-            visited.remove(user)
+            dfs(depth + 1, visited.union([user]))
         }
         
     }
