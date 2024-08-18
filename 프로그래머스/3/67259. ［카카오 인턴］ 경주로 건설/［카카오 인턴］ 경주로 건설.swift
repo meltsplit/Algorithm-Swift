@@ -37,31 +37,24 @@ func solution(_ board:[[Int]]) -> Int {
     }
     
     func isValid(_ x: Int, _ y: Int) -> Bool {
-        return x >= 0 && x < board.count && y >= 0 && y < board.count 
+        return x >= 0 && x < board.count && y >= 0 && y < board.count && board[x][y] == 0
     }
     
-    func dfs(_ x: Int, _ y: Int, _ prevDir: Direction) {
-       
-        let dx = [-1, 1, 0, 0]
-        let dy = [0, 0, -1, 1]
+    func dfs(_ x: Int, _ y: Int, _ cost: Int, _ prevDir: Direction) {
         
-        for i in 0..<4 {
-            let nextX = x + dx[i]
-            let nextY = y + dy[i]
-            let nextDir = Direction(rawValue: i)!
-            let nextCost = dirBoard[prevDir.rawValue][x][y] + (prevDir == nextDir ? 100 : 600)
-             
-            guard isValid(nextX, nextY) else { continue }
-            guard nextCost < dirBoard[i][nextX][nextY] else { continue }
+        guard isValid(x,y) else { return }
+        guard cost < dirBoard[prevDir.rawValue][x][y] || (x == 0 && y == 0)  else { return }
         
-            dirBoard[i][nextX][nextY] = nextCost
-            guard board[nextX][nextY] == 0 else { continue }
-            dfs(nextX, nextY, nextDir)
+        dirBoard[prevDir.rawValue][x][y] = cost
+        
+        for dir in Direction.allCases {
+            let nextCost = prevDir == dir ? 100 : 600
+            dfs(x + dir.dx, y + dir.dy, cost + nextCost, dir)
         }
     }
     
     for dir in Direction.allCases {
-        dfs(0,0, dir)
+        dfs(0,0,0, dir)
     }
     
     return dirBoard.map { $0[board.count-1][board.count-1] }.min()! 
