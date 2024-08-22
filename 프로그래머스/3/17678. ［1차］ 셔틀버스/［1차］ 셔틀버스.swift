@@ -43,27 +43,28 @@ struct Time: Comparable {
 func solution(_ n:Int, _ t:Int, _ m:Int, _ timetable:[String]) -> String {
     var n = n
     var currentTime = 9 * 60
-    var queue = [Time]()
-    var timeTable = timetable.map { Time($0) }.sorted { $0 > $1}
+    var timeTable = timetable.map { Time($0).totalMinutes }.sorted { $0 > $1}
     var answer = 0
           
     while n > 0 {
-        let index = timeTable.firstIndex { $0.totalMinutes <= currentTime } ?? timeTable.count
-        let waitCount = timeTable.count - index
-        let pickUpCount = min(waitCount, m)
-        var crew = [Int]()
-        for _ in 0..<pickUpCount {
-            crew.append(timeTable.removeLast().totalMinutes)
+        var crews = [Int]()
+        for _ in 0..<m {
+            guard !timeTable.isEmpty else { break }
+            let crew = timeTable.removeLast()
+            guard crew <= currentTime else { 
+                timeTable.append(crew)
+                break 
+            }
+            crews.append(crew)
         }
- 
+        
+        if n == 1 { // 마지막 버스라면
+            guard !crews.isEmpty else { return currentTime.toTime }
+            guard crews.count == m else { return currentTime.toTime }
+            return (crews.last! - 1).toTime
+        }
+        
         n -= 1 
-        
-        if n == 0 {
-            guard !crew.isEmpty else { return currentTime.toTime }
-            guard crew.count == m else { return currentTime.toTime }
-            return (crew.last! - 1).toTime
-        }
-        
         currentTime += t
     }
     
