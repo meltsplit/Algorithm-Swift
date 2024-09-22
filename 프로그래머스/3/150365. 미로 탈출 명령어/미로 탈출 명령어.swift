@@ -12,10 +12,10 @@ func solution(_ n:Int, _ m:Int, _ x:Int, _ y:Int, _ r:Int, _ c:Int, _ k:Int) -> 
     
     func dfs(_ x: Int, _ y: Int, _ depth: Int, _ path: [String]) -> [String]? {
         guard x >= 0 && x < n && y >= 0 && y < m else { return nil } // 범위 벗어나면 아웃
-        let l2Distance = abs(r - x) + abs(c - y) 
+        let l1Distance = abs(r - x) + abs(c - y) 
         let ableDistance = k - depth
-        guard ableDistance >= l2Distance else { return nil } // k가 충분해야함
-        guard l2Distance % 2 == ableDistance % 2 else { return nil } // 짝홀이 맞아야함
+        guard ableDistance >= l1Distance else { return nil } // k가 충분해야함
+        guard l1Distance % 2 == ableDistance % 2 else { return nil } // 짝홀이 맞아야함
         
         if depth == k {
             if x == r && y == c { return path }
