@@ -48,11 +48,7 @@ func getDigit(_ n : Int64) -> Int {
 }
 
 func solution(_ numbers:[Int64]) -> [Int] {
-    let a = Int.max
-    let b = pow(2.0, 63.0)
-    let c = pow(10.0, 15.0)
-    // print(Double(a) > b)
-    // print(b > c)
+    
     return numbers.map {
         return execute($0) ? 1 : 0
     }
