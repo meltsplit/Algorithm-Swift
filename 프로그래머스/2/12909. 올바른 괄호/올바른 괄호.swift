@@ -1,23 +1,24 @@
 import Foundation
 
-func solution(_ s:String) -> Bool
-{
-    var s = s.map { String($0) }
-    var stack = [String]()
+func solution(_ s: String) -> Bool {
     
-    for ss in s {
-        if stack.isEmpty || ss == "(" {
-            stack.append(ss)
-            continue
-        }
-        
-        let top = stack.last!
-        if top == "(" {
-            stack.removeLast()
+    var stack: [String] = []
+    let strs = s.map { String($0) }
+    
+    for str in strs {
+        if str == "(" {
+            stack.append(str)
         } else {
-            stack.append(top)
-        }   
+            guard let lastElement = stack.last 
+            else { return false }
+            if lastElement == "(" {
+                stack.removeLast()
+            } else {
+                stack.append(str)
+            }
+        }
     }
     
     return stack.isEmpty
+    
 }
