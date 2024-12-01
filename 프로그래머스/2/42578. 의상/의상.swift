@@ -1,13 +1,18 @@
 import Foundation
 
+// 23:09
+// return: 서로 다른 옷의 조합의 수
+
+
+
 func solution(_ clothes:[[String]]) -> Int {
-    var dict: [String: [String]] = [:]
+   var dict: [String: [String]] = [:]
     
-    for c in clothes {
-        let cloth = c[0]
-        let kind = c[1]
-        dict[kind, default: []].append(cloth)
+    for cloth in clothes {
+        let value = cloth[0]
+        let key = cloth[1]
+        dict[key, default: []].append(value)
     }
     
-    return dict.reduce(1) { $0 * ($1.value.count + 1) } - 1
+    return dict.values.map { $0.count + 1 }.reduce(1, *) - 1
 }
