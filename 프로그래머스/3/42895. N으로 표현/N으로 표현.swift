@@ -1,72 +1,103 @@
-// 사칙 연산 정의
-func add(_ x: Int, _ y: Int) -> Int {
-    x + y
-}
+// func solution(_ N:Int, _ number:Int) -> Int {
+  
+//   var sets = Array(repeating: Set<Int>(), count: 9)
 
-func substract(_ x: Int, _ y: Int) -> Int {
-    x - y
-}
+//   //MARK: - 1
+//   // sets = F(n) (1<= n <= 8)를 설정한다.
+//   // F(n) = n개의 N로 만들 수 있는 수의 집합
+//   // F(n) = F(1) +-*/ F(n-1)
+  
+//   func g(
+//     _ setX: Set<Int>,
+//     _ setY: Set<Int>,
+//     _ operation: (Int,Int) -> Int
+//   ) -> Set<Int> {
+//     var result = Set<Int>()
+//     for x in setX {
+//       for y in setY {
+//         let number = operation(x,y)
+//         if 1 <= number && number < 32000 {
+//           result.insert(number)
+//         }
+//       }
+//     }
+//     return result
+    
+//   }
+//   func f(_ n: Int) -> Set<Int> {
+//     var result = Set<Int>()
+//     let oprations: [(Int,Int) -> Int] = [{ $0 + $1 },
+//                                          {$0 - $1},
+//                                          {$0 * $1},
+//                                          {$0 / $1}]
+//     result.insert(Int(String(repeating: "\(N)", count: n))!)
+    
+//     guard n != 1 else { return result }
+    
+//     // 점화식
+//     for i in 1...n-1 {
+//       for operation in oprations {
+//         let newSets = g(sets[i], sets[n-i], operation)
+//         result = result.union(newSets)
+//       }
+      
+//     }
+//     return result
+//   }
+  
+  
+  
+//   for n in 1...8 {
+//     sets[n] = f(n)
+//   }
+  
+  
+//   //MARK: - 2
+//   // number가 있는 지 확인한다. (작은 set부터)
+  
+//   for n in 1...8 {
+//     if sets[n].contains(number) {
+//       return n
+//     }
+//   }
+  
+//   return -1
+  
+// }
 
-func multiply(_ x: Int, _ y: Int) -> Int {
-    x * y
-}
-
-func divide(_ x: Int, _ y: Int) -> Int {
-    x / y
+func op(_ lhs: Int,_ rhs: Int) -> Set<Int> {
+    var result = Set<Int>()
+    result.insert(lhs + rhs)
+    result.insert(lhs - rhs)
+    result.insert(lhs * rhs)
+    result.insert(lhs / rhs)
+    return result.filter { $0 >= 1 && $0 <= 32000}
 }
 
 func solution(_ N:Int, _ number:Int) -> Int {
-    // 두 집합에 있는 숫자들을 사칙연산한 값들을 구하는 함수
-    func operateTwoSets(_ set1: Set<Int>, _ set2: Set<Int>, _ operation: (Int, Int) -> Int) -> Set<Int> {
-        var result = Set<Int>()
-        
-        for x in set1 {
-            for y in set2 {
-                let number = operation(x, y)
-                if number >= 1 && number <= 32000 {
-                    result.insert(number)
-                }
-            }
-        }
-        
-        return result
-    }
+    var dp: [Int: Set<Int>] = [:]
     
-    // 숫자 N을 n개 가지고 만들 수 있는 수를 구하는 함수
-    func canMakeNumbers(_ n: Int) -> Set<Int> {
-        var result = Set<Int>()
-        let operations = [add, substract, multiply, divide]
-        
-        // 그냥 N을 n개 나열해서 쓴 수
-        result.insert(Int(String(repeating: "\(N)", count: n))!)
-        
-        // 1일 때는 연산할 집합이 없으니까 리턴
-        guard n != 1 else { return result }
-        
-        // set[1] ~ set[n - 1]에서 set[n - 1] ~ set[1]까지 집합을 각각 사칙연산한 결과를 result에 추가
-        for i in 1...(n - 1) {
-            for operation in operations {
-                result = result.union(operateTwoSets(sets[i], sets[n - i], operation))
-            }
-        }
-        return result
-    }
+    dp[0] = []
     
-    // sets[i] = i개의 N으로 만들 수 있는 수
-    var sets = Array(repeating: Set<Int>(), count: 9)
-    
-    // 1 ~ 8개로 구할 수 있는 숫자들을 집합에 넣는다.
     for i in 1...8 {
-        sets[i] = canMakeNumbers(i)
+        let num = Int(String(repeating: String(N), count: i))!
+        dp[i] = [num]
     }
     
-    // number를 만들 수 있는 가장 적은 N을 찾는다
-    for i in 1...8 {
-        if sets[i].contains(number) {
-            return i
+    if N == number { return  1 }
+    
+    for x in 2...8 {
+        for t in 1..<x {
+             for a in dp[t]! {
+                 for b in dp[x - t]! {
+                     dp[x] = op(a,b).union(dp[x] ?? [])
+                     if dp[x]!.contains(number) { return x }
+                 }
+             }
         }
+        
+        
     }
     
-    // 8개 이내의 N으로 number를 만들 수 없다면 -1을 리턴한다.
     return -1
 }
