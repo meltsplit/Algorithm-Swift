@@ -20,11 +20,11 @@ func solution(_ e:Int, _ starts:[Int]) -> [Int] {
         }
     }
     
-    let sMin = starts.min()!
+    // let sMin = starts.min()!
     var maxV = Int.min
     var maxIndex = -1
     
-    for i in (sMin...e).reversed() {
+    for i in (1...e).reversed() {
         let value = count[i]
         if value >= maxV {
             maxV = value
