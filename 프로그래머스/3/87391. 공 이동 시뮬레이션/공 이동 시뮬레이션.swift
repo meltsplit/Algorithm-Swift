@@ -43,13 +43,11 @@ struct QueryHandler {
     }
     
     func execute(_ prev: Points, _ query: [Int]) -> Points? {
-        
         let cmd = query[0]
         let distance = query[1]
         
         var sdx = 0
         var sdy = 0
-        
         var edx = 0
         var edy = 0
         
@@ -88,7 +86,6 @@ func solution(_ n:Int, _ m:Int, _ x:Int, _ y:Int, _ queries:[[Int]]) -> Int64 {
     let queries = Array(queries.reversed())
     var dp = [Points]() 
     let handler = QueryHandler(n: n, m: m)
-    
     
     for i in queries.indices  {
         let query = queries[i]
