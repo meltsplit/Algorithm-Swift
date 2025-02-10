@@ -13,81 +13,65 @@ import Foundation
 func solution(_ coin:Int, _ cards:[Int]) -> Int {
     let n = cards.count
     var coin = coin
+    var dict: [Int: Int] = [:]
     
-    var a = Set<Int>()
-    var b = Set<Int>()
+    for i in cards.indices {
+        dict[cards[i]] = i 
+    }
     
+    var aCards = cards.map { dict[n + 1 - $0]!}
     var latestTurn = 0
     
+    var memory = 0
+    var cache = 0
+    var storage = 0
     
     for i in 0..<(n / 3) {
-        a.insert(cards[i])
+        if aCards[i] <= i { memory += 1 } 
     }
-    print("maxTurn", (n / 3 + 1))
+
+    
     for turn in 1...(n / 3 + 1) {
         latestTurn = turn
         guard turn < (n / 3 + 1) else { break }
+        let i = turn * 2 - 2 + n / 3
+        let j = i + 1
+        let iValue = aCards[i]
+        let jValue = aCards[j]
         
-        let newIndex1 = turn * 2 - 2 + n / 3 
-        let newIndex2 = newIndex1 + 1
-        let newValue1 = cards[newIndex1]
-        let newValue2 = cards[newIndex2]
-        b.insert(newValue1)
-        b.insert(newValue2)
-        
-        if coin >= 0 {
-            var success = false
-            for card in a {
-                let target = n + 1 - card 
-                if a.contains(target) {
-                    a.remove(card)
-                    a.remove(target)
-                    success = true
-                    break
-                }
-            }
-           
-            if success {
-                coin -= 0
-                continue
+        if iValue <= i { 
+            if iValue < (n / 3) {
+                cache += 1
+            } else if iValue >= (n / 3) {
+                storage += 1
+                
             }
         }
         
-        
-        if coin >= 1 {
-            var success = false
-            for card in a {
-                let target = n + 1 - card 
-                if b.contains(target) {
-                    a.remove(card)
-                    b.remove(target)
-                    success = true
-                    break
-                }
+        if jValue <= j {
+            if jValue < (n / 3) {
+                cache += 1
+            } else if jValue >= (n / 3) {
+                storage += 1
             }
-           
-            if success {
-                coin -= 1
-                continue
-            } 
+        } 
+
+        if memory > 0 && coin >= 0 {
+            memory -= 1
+            continue
+        }
+        
+        
+        if cache > 0 && coin >= 1 {
+            cache -= 1
+            coin -= 1
+            continue
         } 
         
-        if coin >= 2 {
-            var success = false
-            for card in b {
-                let target = n + 1 - card 
-                if b.contains(target) {
-                    b.remove(card)
-                    b.remove(target)
-                    success = true
-                    break
-                }
-            }
-           
-            if success {
-                coin -= 2
-                continue
-            }
+        if storage > 0 && coin >= 2 {
+            storage -= 1
+            coin -= 2 
+            continue
         } 
             
         break
