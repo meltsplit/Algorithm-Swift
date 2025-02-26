@@ -5,7 +5,6 @@ import Foundation
 func solution(_ n:Int, _ stations:[Int], _ w:Int) -> Int{
     var answer = 0 
     var low = 1
-    var section = [Int]()
 
     for station in stations {
         let high = station - (w + 1)
@@ -20,9 +19,6 @@ func solution(_ n:Int, _ stations:[Int], _ w:Int) -> Int{
     if distance > 0 {
         answer += Int(ceil(Double(distance) / Double(2 * w + 1)))
     }
-    
-    
-    
 
     return answer
 }
