@@ -1,49 +1,43 @@
 import Foundation
-// 12 43
 
-// dp: 작은문제들이 큰 문제의 부분집합일 때
-
-// f1(x) = x개를 떼었을 때의 최댓값
-// f2(x) = x번째 인덱스까지의 최댓값
-
-// f1(x) = f(x-1) + newValue
-
-// f2(x) = max(f2(x-1), f2(x-2) + sticker[x]) // 나를 포함시키지 않거나, 포함 시키거나.
-// 
-
-// n이 홀수일 때 
-// 1, 1, 2, 5, 4
+// 1236
+// return: 숫자의 합의 최댓값
 
 func solution(_ sticker:[Int]) -> Int{
+    guard sticker.count > 2 else { return sticker.first! }
     
-    var dp1 : [Int] = [] 
-    var dp2 : [Int] = [] 
+    var dp1 = Array(repeating: (0, false), count: sticker.count)
+    var dp2 = Array(repeating: (0, false), count: sticker.count)
     
-    for i in sticker.indices {
-        guard i != 0 else { 
-            dp1.append(sticker[i]) 
-            dp2.append(0)
-            continue
-        } 
+    dp1[0] = (sticker.first!, true)
+    dp2[0] = (0, false)
     
-        guard i != 1 else { 
-            dp1.append(max(sticker[0], sticker[1]))
-            dp2.append(sticker[1])
-            continue
+    dp1[1] = (sticker.first!, false)
+    dp2[1] = (sticker[1], true)
+    
+    func execute(_ dp: [(Int, Bool)], _ newValue: Int, _ i: Int) -> (Int, Bool) {
+        if !dp[i - 1].1 { 
+            return (dp[i - 1].0 + newValue, true)
+        } else {
+            let a = dp[i - 2].0 + newValue
+            let b = dp[i - 1].0
+            if a > b {
+                return (a, true)
+            } else {
+                return (b, false)
+            }
         }
-        
-        
-        
-        if i < sticker.count - 1 {
-            dp1.append(max(dp1[i-1], dp1[i-2] + sticker[i]))    
-        } 
-        dp2.append(max(dp2[i-1], dp2[i-2] + sticker[i]))    
-        
-        
     }
     
-    
-    
-    return max(dp1.last!,dp2.last!)
-    
+    for i in sticker.indices where i > 1 {
+        let newValue = sticker[i]
+        if i < sticker.count - 1 {
+            dp1[i] = execute(dp1, newValue, i)
+        } else {
+            dp1[i] = dp1[i - 1]
+        }
+        dp2[i] = execute(dp2, newValue, i)
+    }
+
+    return max(dp1.last!.0, dp2.last!.0)
 }
