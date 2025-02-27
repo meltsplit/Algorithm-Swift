@@ -17,5 +17,5 @@ func solution(_ genres:[String], _ plays:[Int]) -> [Int] {
         songDict[genre]! = Array(songDict[genre]!.sorted { plays[$0] > plays[$1] }.prefix(2))
     }
     
-    return playDict.sorted { $0.value > $1.value }.map { songDict[$0.key] ?? [] }.flatMap { $0 } 
+    return playDict.sorted { $0.value > $1.value }.flatMap { songDict[$0.key] ?? [] }
 }
