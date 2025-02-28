@@ -21,9 +21,8 @@ func solution(_ user_id:[String], _ banned_id:[String]) -> Int {
             guard !visited.contains(user) else { return nil }
             guard target.count == user.count else { return nil }
             
-            guard target.enumerated().allSatisfy({ i, c in
-                let index = user.index(user.startIndex, offsetBy: i)
-                return c == "*" || c == user[index]
+            guard zip(target, user).allSatisfy({ 
+                return $0 == "*" || $0 == $1
             }) else { return nil }
             return user
         }
@@ -38,5 +37,9 @@ func solution(_ user_id:[String], _ banned_id:[String]) -> Int {
         }
     }
     dfs(0, [])
+    
+    for a in zip("123","456") {
+        print("a", a)
+    }
     return answers.count
 }
