@@ -1,70 +1,58 @@
 import Foundation
 
-// 진열된 모든 종류의 보석을 적어도 1개 이상 포함하는 가장 짧은 구간 찾아서 구매
-
-// games: 나열된 보석
-// RETURN: 가장 짧은 구간의 시작과 끝
-
-// Idea 1: 투포인터
-
-// Idea 2: Set으로 자료구조 만들고 규칙 찾기
-
-// Dia : 0, 3, 4, 7
-// Ruby: 1, 2
-// Em: 5
-// Sap: 6
-
-// Idea 3: 이분탐색
-// isPossible(x): x구간이 possible한가? 
+// 1052
+// return: 가장짧은 구간의 시작 진열대 번호, 끝 진열대 번호
 
 func solution(_ gems:[String]) -> [Int] {
-    var gemsSet = Set(gems)
-    let count = gemsSet.count
-    var bag: [String: Int] = [:]
-    for gem in gemsSet {
-        bag[gem] = 0
-    }
+    var count = Set(gems).count
     
-    var start: Int = 0
-    var end: Int = 0
-    var answer = [0, Int.max]
-    print(count)
-    bag[gems[0], default: 0] += 1
-    var isFull = bag.values.allSatisfy { $0 > 0 }
+    var low = 0
+    var high = gems.count
+    var mid: Int { (low + high) / 2}
+    var answer = [Int:[Int]]()
     
-    while start < gems.count && end < gems.count {
+    func isPossible(_ distance: Int) -> Bool {
+        var p1 = 0
+        var p2 = 0
+        var bag: [String: Int] = [:]
         
-        if isFull { // 가방이 기준을 만족했다면
-            if end - start < answer[1] - answer[0] {
-                answer = [start + 1, end + 1]
-            }
+        for i in 0..<distance {
+            p2 = i
+            let newValue = gems[p2]
+            bag[newValue, default: 0] += 1
         }
         
-        
-        if !isFull { // 다 모으지 못했다면
-            end += 1
-            guard end < gems.count else { break }
-            let count = bag[gems[end], default: 0]
-            bag[gems[end]] = count + 1
-            if count == 0 {
-                isFull = bag.values.allSatisfy { $0 > 0 }
+        while true {
+            // print(distance, p1, p2, bag)
+             if bag.keys.count == count { 
+                // print(bag.keys, count)
+                answer[distance] = [p1 + 1, p2 + 1]
+                return true
             }
             
+            let oldValue = gems[p1]
+            p1 += 1
+            p2 += 1
+            guard p2 < gems.count else { return false }
+            let newValue = gems[p2]
             
-        } else {
-            let count = bag[gems[start], default: 0]
-            if count <= 1 {
-                bag[gems[start]] = 0
-                isFull = false
+            if bag[oldValue] == 1 {
+                bag.removeValue(forKey: oldValue)
             } else {
-                bag[gems[start]] = count - 1
+                bag[oldValue]! -= 1
             }
-            start += 1
+            bag[newValue, default: 0] += 1
         }
-        
+        return false
     }
     
-    return answer
+    while low + 1 < high {
+        if isPossible(mid) {
+            high = mid
+        } else {
+            low = mid 
+        }
+    }
+    
+    return answer[high] ?? [1, gems.count]
 }
-
-// "DIA", "RUBY", "RUBY", "DIA", "DIA", "EMERALD", "SAPPHIRE", "DIA"
