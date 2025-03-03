@@ -1,45 +1,33 @@
 import Foundation
 
-// stones: 디딤돌 적힌 숫자
-// k: 최개 칸수
-// RETURN: 최대 몇명
-
-// Idea 1: 그리디하게
-
-// Idea 2: 이분탐색
-// isPossible(n): n명 지나갔을 때 최대 거리가 k 이하인가?
-// TTTTTFFFFFFFFFFf
+// 1644
+// return 최대
+// TTTFFF
 func solution(_ stones:[Int], _ k:Int) -> Int {
-    
     var low = 0
-    var high = 200_000_001
-    var mid: Int {
-        (low + high) / 2
-    }
-    // 0 1 2 3 4
-    // 0 1 0 0 1
-    func isPossible(_ n: Int) -> Bool {
+    var high = stones.max()! + 1
+    var mid: Int { (low + high) / 2 }
+    
+    func f(_ x: Int) -> Bool {
+        var length = 0
         
-        var maxInterval = 0
-        var lastIndex = -1
-        
-        for i in 0..<stones.count {
-           if stones[i] - n > 0 { lastIndex = i }
-            else  {
-                maxInterval = max(maxInterval, i - lastIndex)
-            }
+        for i in stones.indices {
+            let isDrown = stones[i] - x + 1 <= 0
+            length = isDrown ? length + 1 : 0
+            guard length < k 
+            else { return false }
         }
-
-        return maxInterval < k
+        return true
+        
     }
     
     while low + 1 < high {
-        if isPossible(mid) {
+        if f(mid) {
             low = mid
         } else {
             high = mid
         }
     }
     
-    return low + 1
+    return low
 }
