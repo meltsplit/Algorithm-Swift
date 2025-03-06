@@ -1,55 +1,22 @@
 import Foundation
 
-class Node {
-    let id: Int
-    var next: Node?
-    var prev: Node?
-    
-    init(id: Int) {
-        self.id = id
-    }
-}
-
 class Queue {
-    
-    var head: Node?
-    var tail: Node?
-    
-    var isEmpty: Bool { head == nil || tail == nil }
+    var elements = [Int]()
+    var firstIndex = 0
+    var isEmpty: Bool { elements.count <= firstIndex }
     
     func enqueue(_ id: Int) {
-        let node = Node(id: id)
-        if isEmpty {
-            head = node
-            tail = node
-        } else {
-            tail?.next = node
-            node.prev = tail
-            tail = node
-        }
+        elements.append(id)
     }
     
     func dequeue() -> Int? {
-        guard !isEmpty else { return nil }
-        let temp = head
-        let newHead = temp?.next
-        self.head = newHead
-        newHead?.prev = nil
-        return temp?.id
+		    guard !isEmpty else { return nil }
+		    let temp = elements[firstIndex]
+		    firstIndex += 1
+				return temp
     }
 }
 
-extension Queue: CustomStringConvertible {
-    var description: String {
-        var log = ""
-        var node = head
-        while node != nil {
-            log += " \(node!.id)"
-            node = node!.next
-        }
-        return log
-    }
-}
 func solution(_ n:Int, _ edge:[[Int]]) -> Int {
     
     var graph: [Int: [Int]] = [:]
