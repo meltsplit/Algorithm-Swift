@@ -1,71 +1,82 @@
 import Foundation
 
-// 1번에서 DFS 
-// 방문시 depth를 저장
-
-func solution(_ n:Int, _ edge:[[Int]]) -> Int {
-    var maxDepth = 0
-    var answer = 0
+class Node {
+    let id: Int
+    var next: Node?
+    var prev: Node?
     
-    var graph: [Int: Set<Int>] = [:]
-    var visited = Array(repeating: false, count: n+1)
-    
-    for i in 1...n {
-        graph[i] = []
+    init(id: Int) {
+        self.id = id
     }
-    
-    for e in edge {
-        let a = e[0]
-        let b = e[1]
-        
-        graph[a]!.insert(b)
-        graph[b]!.insert(a)
-    }
-    
-    
-    func bfs( _ visited: inout [Bool]) {
-        var queue = [(Int,Int)]()
-        
-        queue.append((0,1))
-        visited[1] = true
-        
-        while !queue.isEmpty {
-                
-            let (depth,now) = queue.removeFirst()
-            if depth == maxDepth { 
-                answer += 1 
-            }  else if depth > maxDepth {
-                maxDepth = depth
-                answer = 1
-        }
-            
-            for next in graph[now]! {
-                guard !visited[next] else { continue }
-                visited[next] = true
-                queue.append((depth + 1,next))
-            }
-            
-        }
-        
-    }
-    
-    bfs(&visited)
-    return answer
 }
 
-// func dfs(_ now: Int, _ depth: Int, _ visited: inout [Bool]) {
-//         print(now, "방문했습니다 깊이는",depth)
-//         if depth == maxDepth { answer += 1 } 
-//         else if depth > maxDepth {
-//             maxDepth = depth
-//             answer = 1
-//         }
-        
-//         for n in graph[now]! {
-//             guard !visited[n] else { continue }
-//             visited[n] = true
-//             dfs(n, depth + 1, &visited)
-//             visited[n] = false
-//         }
-//     }
+class Queue {
     
+    var head: Node?
+    var tail: Node?
+    
+    var isEmpty: Bool { head == nil || tail == nil }
+    
+    func enqueue(_ id: Int) {
+        let node = Node(id: id)
+        if isEmpty {
+            head = node
+            tail = node
+        } else {
+            tail?.next = node
+            node.prev = tail
+            tail = node
+        }
+    }
+    
+    func dequeue() -> Int? {
+        guard !isEmpty else { return nil }
+        let temp = head
+        let newHead = temp?.next
+        self.head = newHead
+        newHead?.prev = nil
+        return temp?.id
+    }
+}
+
+extension Queue: CustomStringConvertible {
+    var description: String {
+        var log = ""
+        var node = head
+        while node != nil {
+            log += " \(node!.id)"
+            node = node!.next
+        }
+        return log
+    }
+}
+func solution(_ n:Int, _ edge:[[Int]]) -> Int {
+    
+    var graph: [Int: [Int]] = [:]
+    var distance = Array(repeating: -1, count: n + 1)
+    for e in edge {
+        graph[e[0], default: []].append(e[1])
+        graph[e[1], default: []].append(e[0])
+    }
+    
+    distance[1] = 0
+    
+    func bfs() {
+        var queue = Queue()
+        queue.enqueue(1)
+        while !queue.isEmpty {
+            let now = queue.dequeue()!
+            
+            graph[now, default: []].forEach {
+                if distance[$0] == -1 {
+                    distance[$0] = distance[now] + 1
+                    queue.enqueue($0)
+                }
+            }
+        }
+    }
+    
+    bfs()
+    let maxValue = distance.max()!
+    return distance.filter { $0 == maxValue}.count
+}
