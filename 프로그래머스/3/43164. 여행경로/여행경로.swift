@@ -1,37 +1,39 @@
 import Foundation
 
-func solution(_ tickets: [[String]]) -> [String] {
+// return
+func solution(_ tickets:[[String]]) -> [String] {
+    
     var graph: [String: [String]] = [:]
+    var ticketDict: [[String]: Int] = [:]
     
-    // 그래프 구성
     for ticket in tickets {
-        let from = ticket[0]
-        let to = ticket[1]
-        
-        if graph[from] == nil {
-            graph[from] = []
-        }
-        graph[from]?.append(to)
+        graph[ticket[0], default: []].append(ticket[1])
+        ticketDict[ticket, default: 0] += 1
     }
     
-    // 사전 순으로 정렬
     for key in graph.keys {
-        graph[key]?.sort(by: >)
+        graph[key] = graph[key]!.sorted()
     }
     
-    var stack: [String] = ["ICN"]
-    var path: [String] = []
+    var answer = [String]()
     
-    while !stack.isEmpty {
-        let top = stack.last!
+    func dfs(_ now: String, _ path: [String])  {
+        guard answer.isEmpty else { return }
+        if path.count == tickets.count + 1 {
+            answer = path
+            return
+        }
         
-        if let destinations = graph[top], !destinations.isEmpty {
-            stack.append(destinations.last!)
-            graph[top]?.removeLast()
-        } else {
-            path.append(stack.removeLast())
+        var nexts = graph[now] ?? []
+        nexts = nexts.filter { ticketDict[[now,$0]]! > 0 }
+        
+        for next in nexts {
+            ticketDict[[now, next]]! -= 1
+            dfs(next, path + [next])
+            ticketDict[[now, next]]! += 1
+            
         }
     }
-    
-    return path.reversed()
+    dfs("ICN", ["ICN"])
+    return answer
 }
