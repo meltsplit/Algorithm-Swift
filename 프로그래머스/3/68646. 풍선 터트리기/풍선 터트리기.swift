@@ -7,14 +7,12 @@ import Foundation
 
 // 본질
 // 양쪽에 나보다 작은 번호 있으면 불가
+
+// 재정의:
 // arrA: 왼쪽에 나보다 작은 번호가 없다. == 내가 제일 작다.
 // arrB: 오른쪽에 나보다 작은 번호가 없다. == 내가 제일 작다.
 // answer: a || b 
 
-// 재정의:
-// 0 1 2 3 i
-// 1 4 3 2
-// 3 2 1 0 j
 func solution(_ a:[Int]) -> Int {
     var arrA = Array(repeating: false, count: a.count)
     var arrB = Array(repeating: false, count: a.count)
