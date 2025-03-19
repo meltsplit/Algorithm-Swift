@@ -1,39 +1,45 @@
 import Foundation
 
-// 17:10
+// 10%를 계산한 금액이 1 원 미만인 경우에는 이득을 분배하지 않고 자신이 모두 가집니다.
 
-// enroll : 각 판매원의 이름 
-// referral : 각 판매원을 다단계 조직에 참여시킨 다름 판매원. enroll을 초대한 사람 = referral
-// seller: 판매량 집계 데이터의 판매원 이름s
-// amount : 판매량 집계 데이터의 판매 수량s
-// Return : 각 판매원이 득한 이익금
+// enroll: 민호 제외 조직 구성원
+// referral: enroll i 를 참여시킨 사람
+// seller: 
+// amount: 판매 집계 데이터
 
-func solution(_ enroll:[String], 
-              _ referral:[String], 
-              _ seller:[String], 
-              _ amount:[Int]) -> [Int] {
-    
+
+// 문제 정의
+// - 
+// 본질
+// - 
+// 재정의
+// - 2
+func solution(_ enroll:[String], _ referral:[String], _ seller:[String], _ amount:[Int]) -> [Int] {
+    var referralDict: [String: String] = [:]
     var dict: [String: Int] = [:]
-    var bossOf: [String: String] = [:]
     
-    for i in enroll.indices {
-        bossOf[enroll[i]] = referral[i]
+    for i in referral.indices {
+        let e = enroll[i] 
+        let r = referral[i] == "-" ? "center" : referral[i]
+        referralDict[e] = r
     }
     
-    func dfs(_ me: String, _ boss: String?, _ amount: Int) {
-        guard let boss = boss else { return }
-        guard amount > 0 else { return }
-        let bossBenefit = amount * 1 / 10
-        let myBenefit = amount - bossBenefit
-        
-        dict[me, default: 0] += myBenefit
-        dfs(boss, bossOf[boss], bossBenefit)
+    func dfs(_ person: String, _ profit: Int) {
+        guard profit / 10 >= 1 else { 
+            dict[person, default: 0] += profit
+            return 
+        } 
+        dict[person, default: 0] += Int(ceil(Double(profit) * 0.9))
+
+        if let referral = referralDict[person] {
+            dfs(referral, profit / 10)
+        }
     }
     
     for i in seller.indices {
         let s = seller[i]
-        let a = amount[i]
-        dfs(s, bossOf[s], a * 100)
+        let profit = amount[i] * 100
+        dfs(s, profit)
     }
     
     return enroll.map { dict[$0] ?? 0 }
